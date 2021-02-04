@@ -69,7 +69,7 @@ function updateEmployee() {
   console.log(query.sql);
 }
 
-function deleteProduct() {
+function deleteemployee() {
   console.log("Deleting all strawberry icecream...\n");
   connection.query(
     "DELETE FROM products WHERE ?",
