@@ -1,26 +1,30 @@
 var mysql = require("mysql");
+const cTable = require('console.table');
+console.table([
+  {
+    name: 'foo',
+    age: 10
+  }, {
+    name: 'bar',
+    age: 20
+  }
+]);
 
 var connection = mysql.createConnection({
   host: "localhost",
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
-  password: "",
-  database: "ice_creamDB"
+  password: "rootroot",
+  database: "employees"
 });
 
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  createProduct();
+  addDept();
 });
 
-function createProduct() {
+function addDept() {
   console.log("Inserting a new product...\n");
   var query = connection.query(
     "INSERT INTO products SET ?",
@@ -41,7 +45,7 @@ function createProduct() {
   console.log(query.sql);
 }
 
-function updateProduct() {
+function updateEmployee() {
   console.log("Updating all Rocky Road quantities...\n");
   var query = connection.query(
     "UPDATE products SET ? WHERE ?",
