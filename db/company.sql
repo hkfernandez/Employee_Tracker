@@ -1,5 +1,5 @@
-CREATE DATABASE company_team;
-USE company_team;
+CREATE DATABASE company_info;
+USE company_info;
 
 CREATE TABLE employees(
   id INTEGER(6) AUTO_INCREMENT NOT NULL,
