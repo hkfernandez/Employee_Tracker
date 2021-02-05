@@ -1,8 +1,19 @@
 // MODULES
 // builtin
-const fs = require ('fs');
+// const fs = require ('fs');
 // 3rd party
 const inquirer = require ('inquirer');
+const cTable = require('console.table');
+// console.table([
+//   {
+//     name: 'foo',
+//     age: 10
+//   }, {
+//     name: 'bar',
+//     age: 20
+//   }
+// ]);
+
 // custom 
 const Employee = require ('./lib/Employee.js');
 const Dept = require ('./lib/Dept.js');
@@ -33,8 +44,6 @@ function beginPrompts() {
             })
 }     
 
-
-//called by all the buildEmployeeObj functions
 function addEmployee () {
       inquirer.prompt (questions.addEmployee)
             .then 
@@ -44,6 +53,8 @@ function addEmployee () {
 
             })
 }
+
+function pushNewEmployee (){}
 
 function addDept () {
       inquirer.prompt (questions.addDept)
@@ -55,6 +66,8 @@ function addDept () {
             })
 }
 
+function pushNewDept (){}
+
 function addRole () {
       inquirer.prompt (questions.addRole)
             .then 
@@ -63,6 +76,9 @@ function addRole () {
                   pushNewRole(role);
             })
 }
+
+function pushNewRole (){}
+
 
 function selectList () {
       inquirer.prompt (questions.selectList)
@@ -89,7 +105,7 @@ function changeManager () {
 
 
 function init () {
-      buildManagerObj ()
+      beginPrompts()
 }
 
  init ();
