@@ -12,15 +12,7 @@ var connection = mysql.createConnection({
       password: "rootroot",
       database: "company_info"
     });
-// console.table([
-//   {
-//     name: 'foo',
-//     age: 10
-//   }, {
-//     name: 'bar',
-//     age: 20
-//   }
-// ]);
+
 
 // custom 
 const Employee = require ('./lib/Employee.js');
@@ -48,9 +40,9 @@ function beginPrompts() {
                         addRole();
                   } else if (boilerplateChoice === 'Add a new employee'){
                         addEmployee();
-                  } else if (BoilerplateChoice === 'View of list of departments, roles or employees'){
-                        selectList();
-                  }else if (BoilerplateChoice === `Change an employee's manager`){
+                  } else if (boilerplateChoice === 'View of list of departments, roles or employees'){
+                        displayList();
+                  }else if (boilerplateChoice === `Change an employee's manager`){
                         changeManager();
                   }
             })
@@ -89,36 +81,37 @@ function insertNewRecord (newObject, tableName){
         `INSERT INTO ${tableName} SET ?`,
         newObject,
         function(err, res) {
-          if (err) throw err;
-          console.log(res.affectedRows + ` record inserted!\n`);
-          beginPrompts();
+            if (err) throw err;
+            console.log(res.affectedRows + ` record inserted!\n`);
+            beginPrompts();
         }
       );
     
       // logs the actual query being run
       console.log(query.sql);
-    }
+}
 
-
-// function pushNewDept (){}
-
-
-// function pushNewRole (){}
-
-
-// function selectList () {
-//       inquirer.prompt (questions.selectList)
-//             .then 
-//             (({listTypeChoice})=>{
-//                   if (listTypeChoice === "Departments") {
-
-//                   } else if (listTypeChoice === "Roles") {
-
-//                   } else if (listTypeChoice === "employees") {
-
-//                   }
-//             })
-// }
+function displayList () {
+      inquirer.prompt (questions.selectList)
+            .then 
+            (({listTypeChoice})=>{
+                  let tableToReturn = ''
+                  if (listTypeChoice === "Departments") {
+                        tableToReturn = 'dept'
+                  } else if (listTypeChoice === "Roles") {
+                        tableToReturn = 'roles'
+                  } else if (listTypeChoice === "Employees") {
+                        tableToReturn = 'employees'
+                  }
+                  console.log(`Selecting all products in ${tableToReturn}\n`);
+                  connection.query(`SELECT * FROM ${tableToReturn}`, function(err, res) {
+                        if (err) throw err;
+                        console.table(res);
+                  });
+                  beginPrompts();
+            })
+            
+}
 
 // function changeManager () {
 //       inquirer.prompt (questions.changeManager)
@@ -137,26 +130,6 @@ function insertNewRecord (newObject, tableName){
 //  init ();
 
 //=======================CRUD FUNCTIONS=========================================
-// function addDept() {
-//       console.log("Inserting a new product...\n");
-//       var query = connection.query(
-//         "INSERT INTO products SET ?",
-//         {
-//           flavor: "Rocky Road",
-//           price: 3.0,
-//           quantity: 50
-//         },
-//         function(err, res) {
-//           if (err) throw err;
-//           console.log(res.affectedRows + " product inserted!\n");
-//           // Call updateProduct AFTER the INSERT completes
-//           updateProduct();
-//         }
-//       );
-    
-//       // logs the actual query being run
-//       console.log(query.sql);
-//     }
     
 //     function updateEmployee() {
 //       console.log("Updating all Rocky Road quantities...\n");
@@ -198,14 +171,6 @@ function insertNewRecord (newObject, tableName){
 //       );
 //     }
     
-//     function readProducts() {
-//       console.log("Selecting all products...\n");
-//       connection.query("SELECT * FROM products", function(err, res) {
-//         if (err) throw err;
-//         // Log all results of the SELECT statement
-//         console.log(res);
-//         connection.end();
-//       });
-//     }
+
     
 
