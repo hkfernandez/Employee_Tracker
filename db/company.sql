@@ -2,24 +2,24 @@ CREATE DATABASE company_info;
 USE company_info;
 
 CREATE TABLE employees(
-  id INTEGER(6) AUTO_INCREMENT NOT NULL,
-  first_name VARCHAR(50),
-  last_name VARCHAR(50),
+  id INTEGER(6) AUTO_INCREMENT,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
   role_id INTEGER(6),
   manager_id INTEGER(6),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE roles(
-  id INTEGER(6) AUTO_INCREMENT NOT NULL,
+  id INTEGER(6) AUTO_INCREMENT,
   title VARCHAR(100) NOT NULL,
   salary INTEGER(100) NOT NULL,
-  dept_id INTEGER(6) NOT NULL
+  dept_id INTEGER(6) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE dept(
-  id INTEGER(6) AUTO_INCREMENT NOT NULL,
+  id INTEGER(6) AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   PRIMARY KEY (id)
 );

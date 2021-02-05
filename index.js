@@ -4,74 +4,89 @@ const fs = require ('fs');
 // 3rd party
 const inquirer = require ('inquirer');
 // custom 
-const html = require ('./Develop/src/page-template.js');
+const Employee = require ('./lib/Employee.js');
+const Dept = require ('./lib/Dept.js');
+const Role = require ('./lib/Role.js');
 const questions = require ('./lib/Questions.js');
-const Manager = require ('./lib/Manager.js');
-const Engineer = require ('./lib/Engineer.js');
-const Intern = require ('./lib/Intern.js');
+
 
 // GLOBAL VARIABLES
-const employeesArrGV = [];
+
 
 // FUNCTIONS
-function buildManagerObj () {
-      inquirer.prompt (questions.manager)
-            .then (({name, id, email, officeNumber, addTeamMemberChoice})=>{
-                  let manager = new Manager (name, id, email, officeNumber);
-                  employeesArrGV.push(manager);
-                  addNewEmployee();
+
+function beginPrompts() {
+      inquirer.prompt (questions.boilerplate)
+            .then 
+            (({boilerplateChoice})=>{
+                  if (boilerplateChoice === 'Create a new department') {
+                        addDept();
+                  } else if (boilerplateChoice === 'Add a new role') {
+                        addRole();
+                  } else if (boilerplateChoice === 'Add a new employee'){
+                        addEmployee();
+                  } else if (BoilerplateChoice === 'View of list of departments, roles or employees'){
+                        selectList();
+                  }else if (BoilerplateChoice === `Change an employee's manager`){
+                        changeManager();
+                  }
+            })
+}     
+
+
+//called by all the buildEmployeeObj functions
+function addEmployee () {
+      inquirer.prompt (questions.addEmployee)
+            .then 
+            (({firstName, lastName, employeeRole, managerName})=>{
+                  let employee = new Employee (firstName, lastName, employeeRole, managerName);
+                  pushNewEmployee(employee);
+
             })
 }
 
-//called by all the buildEmployeeObj functions
-function addNewEmployee () {
-      inquirer.prompt (questions.addEmployee)
-      .then (({addEmployeeChoice})=>{
-            const addEmployee = addEmployeeChoice;
-            if(addEmployee === "Yes") {
-                  askEmployeeType()
-            }else {
-                  writeHtml();
-            }
-      })
+function addDept () {
+      inquirer.prompt (questions.addDept)
+            .then 
+            (({name})=>{
+                  let dept = new Dept (name);
+                  pushNewDept(dept);
+
+            })
 }
 
-// called by addNewEmployee 
-function askEmployeeType () {
-      inquirer.prompt (questions.employeeType)
-            .then (({employeeTypeChoice})=>{
-                  employeeTypeGV = employeeTypeChoice
-                  if( employeeTypeGV === "Engineer") {
-                        buildEngineerObj ();
-                  } else {
-                        buildInternObj ();
+function addRole () {
+      inquirer.prompt (questions.addRole)
+            .then 
+            (({roleName, roleDept, roleSalary})=>{
+                  let role = new Role (roleName, roleDept, roleSalary);
+                  pushNewRole(role);
+            })
+}
+
+function selectList () {
+      inquirer.prompt (questions.selectList)
+            .then 
+            (({listTypeChoice})=>{
+                  if (listTypeChoice === "Departments") {
+
+                  } else if (listTypeChoice === "Roles") {
+
+                  } else if (listTypeChoice === "employees") {
+
                   }
             })
 }
 
-function buildEngineerObj () {
-      inquirer.prompt (questions.engineer)
-            .then (({name, id, email, github, addTeamMemberChoice})=>{
-                  let engineer = new Engineer (name, id, email, github);
-                  employeesArrGV.push(engineer);
-                  addNewEmployee();
+function changeManager () {
+      inquirer.prompt (questions.changeManager)
+            .then 
+            (({employee, manager})=>{
+
             })
 }
 
-function buildInternObj () {
-      inquirer.prompt (questions.intern)
-            .then (({name, id, email, school, addTeamMemberChoice})=>{
-                  let intern = new Intern (name, id, email, school);
-                  employeesArrGV.push(intern);
-                  addNewEmployee();
-            })
-}
 
-// calledd by addNewEmployee
-function writeHtml () {
-      let htmlDoc = html(employeesArrGV);
-      fs.writeFile ('./Dist/team.html', htmlDoc, () => {console.log('HTML File Written')});
-}
 
 function init () {
       buildManagerObj ()
@@ -79,12 +94,3 @@ function init () {
 
  init ();
 
-/* PSEUDO CODE
-user is prompted to enter a managers information
-manager object is built and passed to global variable
-user prompted to add another emplyee
-user selects type of employee to add
-depending on type of employee chosen to enter user enters information for that employee
-employee object is pushed to global variable
-once user is done enetering employees an HTML file is written based on the global variable array
-*/
