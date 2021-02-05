@@ -68,8 +68,8 @@ function addEmployee () {
 function addRole () {
       inquirer.prompt (questions.addRole)
             .then 
-            (({role_name, role_dept, role_salary})=>{
-                  let newRole = new Role (role_name, role_dept, role_salary);
+            (({name, salary, dept})=>{
+                  let newRole = new Role (name, salary, dept);
                   insertNewRecord(newRole, 'roles');
             })
 }
