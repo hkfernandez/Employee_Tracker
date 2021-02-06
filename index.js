@@ -116,7 +116,7 @@ function displayList () {
             
 }
 
-function selectEmployee (employee) {
+function selectEmployee () {
       connection.query(
             `SELECT * FROM employees`, function(err, res) {
                   if (err) throw err;
@@ -133,11 +133,12 @@ function selectEmployee (employee) {
                         [{type: 'list', 
                               message: `Select the employee`, 
                               choices: selectionList,
-                              name: 'employee'
+                              name: 'id'
                         }]
                   ).then (
                         ({id}) => {
                               let employeeId = id;
+                              console.log('EMPLOYEE ID ', employeeId);
                               selectRole (employeeId);
                         }
                   )
@@ -162,11 +163,12 @@ function selectEmployee (employee) {
                         [{type: 'list', 
                               message: `Select the new role`, 
                               choices: selectionList,
-                              name: 'role'
+                              name: 'id'
                         }]
                   ).then (
                         ({id}) => {
                               let roleId = id;
+                              console.log('ROLEID ', roleId);
                               assignNewRole (employeeId, roleId);
                         }
                   )
@@ -175,7 +177,14 @@ function selectEmployee (employee) {
  };
 
  function assignNewRole (employeeId, roleId){
-       
+       console.log(employeeId, roleId);
+      connection.query(
+            `UPDATE employees SET role_id = ${roleId} WHERE id = ${employeeId}`,
+             function(err, res) {
+                  console.log(res);
+                  beginPrompts();
+            }
+      )
  }
 
 // function buildTableList (tableName) {
