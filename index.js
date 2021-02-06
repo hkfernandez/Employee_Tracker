@@ -70,12 +70,29 @@ function addRole () {
 }
 
 function addDept () {
-      inquirer.prompt (questions.addDept)
-            .then 
-            (({name})=>{
-                  let newDept = new Dept (name);
-                  insertNewRecord(newDept, 'dept');
-            })
+      const displayDepts = new Promise ((resolve, reject)=>{ resolve (displayList('dept'))})
+      // displayList ('dept')
+      // console.log('ABOUT TO PRINT DEPT LIST');
+      displayDepts
+      .then (
+            // displayList('dept')
+            // connection.query(
+            //       `SELECT * FROM dept`, 
+            //       function(err, res) {
+            //             if (err) throw err;
+            //             console.table('\n',res);
+            //       }
+            // )     
+      
+            inquirer.prompt (questions.addDept)
+            .then (
+                  ({name})=>{
+                        let newDept = new Dept (name);
+                        insertNewRecord(newDept, 'dept');
+                  }
+            )
+      //       .catch()
+      )
 }
 
 function insertNewRecord (newObject, tableName){
@@ -94,26 +111,35 @@ function insertNewRecord (newObject, tableName){
       console.log(query.sql);
 }
 
-function displayList () {
-      inquirer.prompt (questions.selectList)
-            .then 
-            (({listTypeChoice})=>{
-                  let tableToReturn = ''
-                  if (listTypeChoice === "Departments") {
-                        tableToReturn = 'dept'
-                  } else if (listTypeChoice === "Roles") {
-                        tableToReturn = 'roles'
-                  } else if (listTypeChoice === "Employees") {
-                        tableToReturn = 'employees'
-                  }
-                  console.log(`Selecting all products in ${tableToReturn}\n`);
-                  connection.query(`SELECT * FROM ${tableToReturn}`, function(err, res) {
-                        if (err) throw err;
-                        // console.table(res);
-                  });
-                  beginPrompts();
-            })
-            
+function displayList (listName) {   //can take an argument or select a list via prompts
+      // console.log('LIST NAME ', listName);
+      let tableToReturn = listName
+      if (!listName) {
+            inquirer.prompt (questions.selectList)
+            .then(
+                  ({listTypeChoice})=>{
+                        let tableToReturn = ''
+                        if (listTypeChoice === "Departments") {
+                              tableToReturn = 'dept'
+                        } else if (listTypeChoice === "Roles") {
+                              tableToReturn = 'roles'
+                        } else if (listTypeChoice === "Employees") {
+                              tableToReturn = 'employees'
+                        }
+                        return tableToReturn;
+                  }   
+            );
+      }
+      // console.log('TABLE TO RETURN: ', tableToReturn);
+      // console.log(`Selecting all products in ${tableToReturn}\n`);
+      connection.query(
+            `SELECT * FROM ${tableToReturn}`, 
+            function(err, res) {
+                  if (err) throw err;
+                  console.table('\n',res);
+            }
+      )     
+      // beginPrompts();    
 }
 
 function selectEmployee () {
@@ -290,10 +316,10 @@ function selectEmployee () {
 //       );
 //     }
     
-const changeRoleSelectEmployee =[
-      {type: 'list', message: `Select the employee`, name: 'employee', choices: gSelectionList},//address
-]
+// const changeRoleSelectEmployee =[
+//       {type: 'list', message: `Select the employee`, name: 'employee', choices: gSelectionList},//address
+// ]
 
-const changeRoleSelectManager =[
-      {type: 'list', message: `Select the manager`, name: 'role', choices: gSelectionList}//address
-]
+// const changeRoleSelectManager =[
+//       {type: 'list', message: `Select the manager`, name: 'role', choices: gSelectionList}//address
+// ]
