@@ -20,6 +20,9 @@ const Dept = require ('./lib/Dept.js');
 const Role = require ('./lib/Role.js');
 const questions = require ('./lib/Questions.js');
 
+// GLOBAL VARIABLES
+let gSelectionList = 'test';
+
 
 //on database connection
 connection.connect(function(err) {
@@ -42,8 +45,8 @@ function beginPrompts() {
                         addEmployee();
                   } else if (boilerplateChoice === 'View of list of departments, roles or employees'){
                         displayList();
-                  }else if (boilerplateChoice === `Change an employee's manager`){
-                        changeManager();
+                  }else if (boilerplateChoice === `Change an employee's position`){
+                        selectEmployee();
                   }
             })
 }     
@@ -106,13 +109,117 @@ function displayList () {
                   console.log(`Selecting all products in ${tableToReturn}\n`);
                   connection.query(`SELECT * FROM ${tableToReturn}`, function(err, res) {
                         if (err) throw err;
-                        console.table(res);
+                        // console.table(res);
                   });
                   beginPrompts();
             })
             
 }
 
+function selectEmployee () {
+      connection.query(
+            `SELECT * FROM employees`, function(err, res) {
+                  if (err) throw err;
+                  selectionList = [];
+                  for (let i = 0; i < res.length; i++) {
+                        let item = {
+                              name: res[i].first_name+' '+ res[i].last_name,
+                              value: res[i].id
+                        }
+                        selectionList.push(item);
+                  }
+                  console.log(selectionList);
+                  inquirer.prompt (
+                        [{type: 'list', 
+                              message: `Select the employee`, 
+                              choices: selectionList,
+                              name: 'employee'
+                        }]
+                  ).then (
+                        ({id}) => {
+                              let employeeId = id;
+                              selectEmployee (id);
+                        }
+                  )
+            }
+      )
+ };
+
+ function selectManager (employeeId) {
+      connection.query(
+            `SELECT * FROM `, function(err, res) {
+                  if (err) throw err;
+                  selectionList = [];
+                  for (let i = 0; i < res.length; i++) {
+                        let item = {
+                              name: res[i].first_name+' '+ res[i].last_name,
+                              value: res[i].id
+                        }
+                        selectionList.push(item);
+                  }
+                  console.log(selectionList);
+                  inquirer.prompt (
+                        [{type: 'list', 
+                              message: `Select the employee`, 
+                              choices: selectionList,
+                              name: 'employee'
+                        }]
+                  ).then (
+                        ({id}) => {
+                              let employeeId = id;
+                              selectManager (id);
+                        }
+                  )
+            }
+      )
+ };
+
+
+// function buildTableList (tableName) {
+//       connection.query(
+//             `SELECT * FROM ${tableName}`, function(err, res) {
+//                   if (err) throw err;
+//                   gSelectionList = []
+//                   if (tableName ==='employees'){
+//                         for (let i = 0; i < res.length; i++) {
+//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
+//                               let item = {
+//                                     display : `${res[i].first_name} ${res[i].last_name}`,
+//                                     value: { id: res[i].id }
+//                               }
+//                               gSelectionList.push(item);
+//                         }
+//                   } else if (tableName ==='roles') {
+//                         for (let i = 0; i < res.length; i++) {
+//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
+//                               let item = {
+//                                     display : res[i].title,
+//                                     value: { id: res[i].id }
+//                               }
+//                               gSelectionList.push(item);
+//                         }
+
+//                   } else {
+//                         for (let i = 0; i < res.length; i++) {
+//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
+//                               let item = {
+//                                     display : res[i].name,
+//                                     value: { id: res[i].id }
+//                               }
+//                               gSelectionList.push(item);
+//                         }
+
+//                   }
+//                   console.log('GSELCTIONLIST ', gSelectionList);
+//             }
+//       )
+//  }
+
+//  const buildTableListPromise = new Promise (
+//        (resolve, reject) => {
+//             resolve (buildTableList('employees'));
+//        }
+//  )
 // function changeManager () {
 //       inquirer.prompt (questions.changeManager)
 //             .then 
@@ -171,6 +278,10 @@ function displayList () {
 //       );
 //     }
     
+const changeRoleSelectEmployee =[
+      {type: 'list', message: `Select the employee`, name: 'employee', choices: gSelectionList},//address
+]
 
-    
-
+const changeRoleSelectManager =[
+      {type: 'list', message: `Select the manager`, name: 'role', choices: gSelectionList}//address
+]

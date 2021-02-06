@@ -38,3 +38,7 @@ INSERT INTO employees (first_name, last_name, role_id, manager_id)
 values ('Sally', 'Smith', 2, 2);
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 values ('Mike', 'Smith', 3, 3);
+
+SELECT * FROM employees;
+SELECT * FROM roles;
+SELECT * FROM dept;
