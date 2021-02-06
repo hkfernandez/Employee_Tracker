@@ -116,7 +116,7 @@ function displayList () {
             
 }
 
-function selectEmployee () {
+function selectEmployee (employee) {
       connection.query(
             `SELECT * FROM employees`, function(err, res) {
                   if (err) throw err;
@@ -138,21 +138,21 @@ function selectEmployee () {
                   ).then (
                         ({id}) => {
                               let employeeId = id;
-                              selectEmployee (id);
+                              selectRole (employeeId);
                         }
                   )
             }
       )
  };
 
- function selectManager (employeeId) {
+ function selectRole (employeeId) {
       connection.query(
-            `SELECT * FROM `, function(err, res) {
+            `SELECT * FROM roles`, function(err, res) {
                   if (err) throw err;
                   selectionList = [];
                   for (let i = 0; i < res.length; i++) {
                         let item = {
-                              name: res[i].first_name+' '+ res[i].last_name,
+                              name: res[i].title,
                               value: res[i].id
                         }
                         selectionList.push(item);
@@ -160,20 +160,23 @@ function selectEmployee () {
                   console.log(selectionList);
                   inquirer.prompt (
                         [{type: 'list', 
-                              message: `Select the employee`, 
+                              message: `Select the new role`, 
                               choices: selectionList,
-                              name: 'employee'
+                              name: 'role'
                         }]
                   ).then (
                         ({id}) => {
-                              let employeeId = id;
-                              selectManager (id);
+                              let roleId = id;
+                              assignNewRole (employeeId, roleId);
                         }
                   )
             }
       )
  };
 
+ function assignNewRole (employeeId, roleId){
+       
+ }
 
 // function buildTableList (tableName) {
 //       connection.query(
