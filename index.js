@@ -65,59 +65,38 @@ function addEmployee () {
 
 function addRole () {
       inquirer.prompt (questions.addRole)
-            .then 
-            (({name, salary, dept})=>{
+      .then (
+            ({name, salary, dept})=>{
                   let newRole = new Role (name, salary, dept);
                   insertNewRecord(newRole, 'roles');
                   console.log(`The postion of ${name} has been added the company profile`);
-            })
+            }
+      )
 }
 
-function addDept () {
-      // const displayDepts = new Promise ((resolve, reject)=>{ resolve (displayList('dept'))})
-      // displayList ('dept');
-      // console.log('ABOUT TO PRINT DEPT LIST');
-      // displayDepts
-      // .then (
-            // displayList('dept')
-            // connection.query(
-            //       `SELECT * FROM dept`, 
-            //       function(err, res) {
-            //             if (err) throw err;
-            //             console.table('\n',res);
-            //       }
-            // )     
-      
-            inquirer.prompt (questions.addDept)
-            .then (
-                  ({name})=>{
-                        let newDept = new Dept (name);
-                        insertNewRecord(newDept, 'dept');
-                        console.log(`${name} has been added to the company profile.`);
-                  }
-            )
-  
-      //       .catch()
-      // )
+function addDept () {      
+      inquirer.prompt (questions.addDept)
+      .then (
+            ({name})=>{
+                  let newDept = new Dept (name);
+                  insertNewRecord(newDept, 'dept');
+                  console.log(`${name} has been added to the company profile.`);
+            }
+      )
 }
 
 function insertNewRecord (newObject, tableName){
-      // console.log(`Inserting a new record in ${tableName}...\n`);
       var query = connection.query(
         `INSERT INTO ${tableName} SET ?`,
         newObject,
         function(err, res) {
             if (err) throw err;
-            // console.log(res.affectedRows + ` record inserted!\n`);
             beginPrompts();
         }
       );
-    
-      // logs the actual query being run
-      // console.log(query.sql);
 }
 
-function displayList (listName, cb) {   //can take an argument or select a list via prompts
+function displayList (listName, cb) {   //can take an argument or select a list via prompts - takes callback
       // console.log('LIST NAME ', listName);
       let tableToReturn = listName
       if (listName === undefined) {
@@ -140,23 +119,28 @@ function displayList (listName, cb) {   //can take an argument or select a list 
                                     beginPrompts();
                               }
                         );
-                        
-            
                   } 
             )
       } else {
-            // console.log('TABLE TO RETURN: ', tableToReturn);
-            // console.log(`Selecting all products in ${tableToReturn}\n`);
             connection.query(
                   `SELECT * FROM ${tableToReturn}`, 
                   function(err, res) {
                         if (err) throw err;
                         console.table('\n',res);
-                        cb ();
+                        inquirer.prompt (questions.continueOrMain)
+                        .then (
+                              ({choice})=>{
+                                    if (choice === 'Return to Main Menu') {
+                                          console.log(`\n==========================================\n`);
+                                          beginPrompts();
+                                    } else {
+                                          cb ();
+                                    }
+                              }
+                        )   
                   }
             )
       }    
-      // beginPrompts();    
 }
 
 function selectEmployee () {
@@ -231,9 +215,10 @@ function selectEmployee () {
  }
 
  function exit () {
-       console.log(`====================================\n
-            You have ended your session\n
-            Enter 'npm start' on the command line start a new session`
+       console.log(`==========================================================\n
+You have ended your session\n
+Enter 'npm start' on the command line start a new session\n
+==========================================================\n`
       );
        return process.exit (0)
  }
