@@ -21,7 +21,15 @@ const Role = require ('./lib/Role.js');
 const questions = require ('./lib/Questions.js');
 
 // GLOBAL VARIABLES
-let gSelectionList = 'test';
+const employeeListQuery = `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
+R.title AS POSTION, 
+D.name AS DEPARTMENT
+FROM employees AS E
+LEFT JOIN roles AS R 
+ON (R.id = E.role_id)
+LEFT JOIN dept AS D
+ON (D.id = R.dept_id)
+ORDER BY LAST ASC;`;
 
 
 //on database connection
@@ -151,16 +159,15 @@ function displayDepts (){
 } 
 
 function displayEmployees (){
-      connection.query(
-            `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
-            R.title AS POSTION, 
-            D.name AS DEPARTMENT
-            FROM employees AS E
-            LEFT JOIN roles AS R 
-            ON (R.id = E.role_id)
-            LEFT JOIN dept AS D
-            ON (D.id = R.dept_id)
-            ORDER BY LAST ASC;`, 
+      connection.query(`SELECT E.first_name AS FIRST, E.last_name AS LAST, 
+      R.title AS POSTION, 
+      D.name AS DEPARTMENT
+      FROM employees AS E
+      LEFT JOIN roles AS R 
+      ON (R.id = E.role_id)
+      LEFT JOIN dept AS D
+      ON (D.id = R.dept_id)
+      ORDER BY LAST ASC;`, 
             function(err, res) {
                   if (err) throw err;
                   console.table('\n',res);
@@ -191,17 +198,27 @@ function contiinueMainCb () {
 
 function selectEmployee () {
       connection.query(
-            `SELECT * FROM employees`, function(err, res) {
+            // `SELECT * FROM employees`, function(err, res) {
+                  `SELECT E.id AS ID, E.first_name AS FIRST, E.last_name AS LAST, 
+                  R.title AS POSTION, 
+                  D.name AS DEPARTMENT
+                  FROM employees AS E
+                  LEFT JOIN roles AS R 
+                  ON (R.id = E.role_id)
+                  LEFT JOIN dept AS D
+                  ON (D.id = R.dept_id)
+                  ORDER BY LAST ASC;`, function(err, res) {
                   if (err) throw err;
                   selectionList = [];
+                  console.log(res);
                   for (let i = 0; i < res.length; i++) {
                         let item = {
-                              name: res[i].first_name+' '+ res[i].last_name,
-                              value: res[i].id
+                              name: `${res[i].FIRST} ${res[i].LAST} - ${res[i].POSTION} in ${res[i].DEPARTMENT}`,
+                              value: res[i].ID
                         }
                         selectionList.push(item);
                   }
-                  console.log(selectionList);
+                  // console.log(selectionList);
                   inquirer.prompt (
                         [{type: 'list', 
                               message: `Select the employee`, 
