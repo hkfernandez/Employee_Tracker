@@ -22,7 +22,7 @@ const questions = require ('./lib/Questions.js');
 
 // GLOBAL VARIABLES
 const employeeListQuery = `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
-R.title AS POSTION, 
+R.title AS POSITION, 
 D.name AS DEPARTMENT
 FROM employees AS E
 LEFT JOIN roles AS R 
@@ -126,7 +126,7 @@ function displayList (listName, cb) {   //can take an argument or select a list 
                   function(err, res) {
                         if (err) throw err;
                         console.table('\n',res);
-                        contiinueMainCb ();    
+                        cbOrMainOrExit(cb);    
                   }
             )
       }    
@@ -160,7 +160,7 @@ function displayDepts (){
 
 function displayEmployees (){
       connection.query(`SELECT E.first_name AS FIRST, E.last_name AS LAST, 
-      R.title AS POSTION, 
+      R.title AS POSITION, 
       D.name AS DEPARTMENT
       FROM employees AS E
       LEFT JOIN roles AS R 
@@ -180,7 +180,7 @@ function displayEmployees (){
 
 
 
-function contiinueMainCb () { 
+function cbOrMainOrExit () { 
       inquirer.prompt (questions.continueOrMain)
       .then (
             ({choice})=>{
@@ -200,7 +200,7 @@ function selectEmployee () {
       connection.query(
             // `SELECT * FROM employees`, function(err, res) {
                   `SELECT E.id AS ID, E.first_name AS FIRST, E.last_name AS LAST, 
-                  R.title AS POSTION, 
+                  R.title AS POSITION, 
                   D.name AS DEPARTMENT
                   FROM employees AS E
                   LEFT JOIN roles AS R 
@@ -210,10 +210,9 @@ function selectEmployee () {
                   ORDER BY LAST ASC;`, function(err, res) {
                   if (err) throw err;
                   selectionList = [];
-                  console.log(res);
                   for (let i = 0; i < res.length; i++) {
                         let item = {
-                              name: `${res[i].FIRST} ${res[i].LAST} - ${res[i].POSTION} in ${res[i].DEPARTMENT}`,
+                              name: `${res[i].FIRST} ${res[i].LAST} - ${res[i].POSITION} in ${res[i].DEPARTMENT}`,
                               value: res[i].ID
                         }
                         selectionList.push(item);
@@ -227,8 +226,9 @@ function selectEmployee () {
                         }]
                   ).then (
                         ({id}) => {
+                              
                               let employeeId = id;
-                              console.log('EMPLOYEE ID ', employeeId);
+                              // console.log('EMPLOYEE ID ', employeeId);
                               selectRole (employeeId);
                         }
                   )
@@ -258,7 +258,7 @@ function selectEmployee () {
                   ).then (
                         ({id}) => {
                               let roleId = id;
-                              console.log('ROLEID ', roleId);
+                              // console.log('ROLEID ', roleId);
                               assignNewRole (employeeId, roleId);
                         }
                   )
@@ -267,11 +267,22 @@ function selectEmployee () {
  };
 
  function assignNewRole (employeeId, roleId){
-       console.log(employeeId, roleId);
       connection.query(
             `UPDATE employees SET role_id = ${roleId} WHERE id = ${employeeId}`,
              function(err, res) {
-                  console.log(res);
+            }
+      )
+      connection.query(` SELECT E.id as ID, E.first_name AS FIRST, E.last_name AS LAST, 
+      R.title AS POSITION
+      FROM employees AS E
+      LEFT JOIN roles AS R 
+      ON (R.id = E.role_id)
+      WHERE E.id = ${employeeId};
+            `,
+             function(err, res) {
+                  console.log(`==========================================================\n
+${res[0].FIRST} ${res[0].LAST} has been assigned the postion of ${res[0].POSITION}\n
+==========================================================`);
                   beginPrompts();
             }
       )
