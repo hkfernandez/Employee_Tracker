@@ -40,13 +40,15 @@ function beginPrompts() {
                   if (boilerplateChoice === 'Create a new department') {
                         displayList('dept', addDept);
                   } else if (boilerplateChoice === 'Add a new role') {
-                        addRole();
+                        displayList('roles', addRole);
                   } else if (boilerplateChoice === 'Add a new employee'){
-                        addEmployee();
+                        displayList('employees', addEmployee);
                   } else if (boilerplateChoice === 'View of list of departments, roles or employees'){
                         displayList();
                   }else if (boilerplateChoice === `Change an employee's position`){
                         selectEmployee();
+                  }else if (boilerplateChoice === 'Exit the program'){
+                        exit();
                   }
             })
 }     
@@ -57,6 +59,7 @@ function addEmployee () {
             (({firstName, lastName, employeeRole, managerName})=>{
                   let newEmployee = new Employee (firstName, lastName, employeeRole, managerName);
                   insertNewRecord(newEmployee, 'employees');
+                  console.log(`${firstName} ${lastName} has been added as an employee`);
             })
 }
 
@@ -66,6 +69,7 @@ function addRole () {
             (({name, salary, dept})=>{
                   let newRole = new Role (name, salary, dept);
                   insertNewRecord(newRole, 'roles');
+                  console.log(`The postion of ${name} has been added the company profile`);
             })
 }
 
@@ -89,8 +93,7 @@ function addDept () {
                   ({name})=>{
                         let newDept = new Dept (name);
                         insertNewRecord(newDept, 'dept');
-                        console.log(`${newDept} has been added to the company profile.`);
-                        beginPrompts();
+                        console.log(`${name} has been added to the company profile.`);
                   }
             )
   
@@ -227,6 +230,13 @@ function selectEmployee () {
       )
  }
 
+ function exit () {
+       console.log(`====================================\n
+            You have ended your session\n
+            Enter 'npm start' on the command line start a new session`
+      );
+       return process.exit (0)
+ }
 // function buildTableList (tableName) {
 //       connection.query(
 //             `SELECT * FROM ${tableName}`, function(err, res) {
