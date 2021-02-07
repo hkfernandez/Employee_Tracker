@@ -38,7 +38,7 @@ function beginPrompts() {
             .then 
             (({boilerplateChoice})=>{
                   if (boilerplateChoice === 'Create a new department') {
-                        addDept();
+                        displayList('dept', addDept);
                   } else if (boilerplateChoice === 'Add a new role') {
                         addRole();
                   } else if (boilerplateChoice === 'Add a new employee'){
@@ -70,11 +70,11 @@ function addRole () {
 }
 
 function addDept () {
-      const displayDepts = new Promise ((resolve, reject)=>{ resolve (displayList('dept'))})
-      // displayList ('dept')
+      // const displayDepts = new Promise ((resolve, reject)=>{ resolve (displayList('dept'))})
+      // displayList ('dept');
       // console.log('ABOUT TO PRINT DEPT LIST');
-      displayDepts
-      .then (
+      // displayDepts
+      // .then (
             // displayList('dept')
             // connection.query(
             //       `SELECT * FROM dept`, 
@@ -89,56 +89,70 @@ function addDept () {
                   ({name})=>{
                         let newDept = new Dept (name);
                         insertNewRecord(newDept, 'dept');
+                        console.log(`${newDept} has been added to the company profile.`);
+                        beginPrompts();
                   }
             )
+  
       //       .catch()
-      )
+      // )
 }
 
 function insertNewRecord (newObject, tableName){
-      console.log(`Inserting a new record in ${tableName}...\n`);
+      // console.log(`Inserting a new record in ${tableName}...\n`);
       var query = connection.query(
         `INSERT INTO ${tableName} SET ?`,
         newObject,
         function(err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + ` record inserted!\n`);
+            // console.log(res.affectedRows + ` record inserted!\n`);
             beginPrompts();
         }
       );
     
       // logs the actual query being run
-      console.log(query.sql);
+      // console.log(query.sql);
 }
 
-function displayList (listName) {   //can take an argument or select a list via prompts
+function displayList (listName, cb) {   //can take an argument or select a list via prompts
       // console.log('LIST NAME ', listName);
       let tableToReturn = listName
-      if (!listName) {
+      if (listName === undefined) {
             inquirer.prompt (questions.selectList)
             .then(
                   ({listTypeChoice})=>{
-                        let tableToReturn = ''
                         if (listTypeChoice === "Departments") {
                               tableToReturn = 'dept'
                         } else if (listTypeChoice === "Roles") {
                               tableToReturn = 'roles'
                         } else if (listTypeChoice === "Employees") {
                               tableToReturn = 'employees'
-                        }
-                        return tableToReturn;
-                  }   
-            );
-      }
-      // console.log('TABLE TO RETURN: ', tableToReturn);
-      // console.log(`Selecting all products in ${tableToReturn}\n`);
-      connection.query(
-            `SELECT * FROM ${tableToReturn}`, 
-            function(err, res) {
-                  if (err) throw err;
-                  console.table('\n',res);
-            }
-      )     
+                        };
+                        connection.query(
+                              `SELECT * FROM ${tableToReturn}`, 
+                              function(err, res) {
+                                    if (err) throw err;
+                                    console.log('THIS IS INSIDE THE CREATE LIST INQUIRER');
+                                    console.table('\n',res);
+                                    beginPrompts();
+                              }
+                        );
+                        
+            
+                  } 
+            )
+      } else {
+            // console.log('TABLE TO RETURN: ', tableToReturn);
+            // console.log(`Selecting all products in ${tableToReturn}\n`);
+            connection.query(
+                  `SELECT * FROM ${tableToReturn}`, 
+                  function(err, res) {
+                        if (err) throw err;
+                        console.table('\n',res);
+                        cb ();
+                  }
+            )
+      }    
       // beginPrompts();    
 }
 
