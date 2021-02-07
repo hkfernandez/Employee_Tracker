@@ -104,13 +104,12 @@ function displayList (listName, cb) {   //can take an argument or select a list 
             .then(
                   ({listTypeChoice})=>{
                         if (listTypeChoice === "Departments") {
-                              displayRoles ();
+                              displayDepts ();
                         } else if (listTypeChoice === "Roles") {
                               displayRoles();
                         } else if (listTypeChoice === "Employees") {
-                              tableToReturn = 'employees'
+                              displayEmployees ();
                         }
-                        
                   }      
             )
       } else {
@@ -146,6 +145,27 @@ function displayDepts (){
                   console.table('\n',res);
                   console.log(`==========================================================`);
                   console.log(`Current company departments listed above.\n`);
+                  beginPrompts();
+            }
+      );
+} 
+
+function displayEmployees (){
+      connection.query(
+            `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
+            R.title AS POSTION, 
+            D.name AS DEPARTMENT
+            FROM employees AS E
+            LEFT JOIN roles AS R 
+            ON (R.id = E.role_id)
+            LEFT JOIN dept AS D
+            ON (D.id = R.dept_id)
+            ORDER BY LAST ASC;`, 
+            function(err, res) {
+                  if (err) throw err;
+                  console.table('\n',res);
+                  console.log(`==========================================================`);
+                  console.log(`Current company employees listed above.\n`);
                   beginPrompts();
             }
       );
