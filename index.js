@@ -56,19 +56,43 @@ function addEmployee () {
                   insertNewRecord(newEmployee, 'employees');
                   console.log(`==========================================================\n
 ${firstName} ${lastName} has been added as an employee\n
-==========================================================`);
+==========================================================\n`);
             })
 }
 
 function addRole () {
       inquirer.prompt (questions.addRole)
       .then (
-            ({name, salary, dept})=>{
-                  let newRole = new Role (name, salary, dept);
-                  insertNewRecord(newRole, 'roles');
-                  console.log(`==========================================================\n
-The postion of ${name} has been added the company profile\n
-==========================================================`);
+            ({name, salary})=>{
+                  let positionName = name;
+                  let positionSalary = salary;
+                  connection.query(
+                        `SELECT * FROM dept`, function(err, res) {
+                              if (err) throw err;
+                              selectionList = [];
+                              for (let i = 0; i < res.length; i++) {
+                                    let item = {
+                                          name: res[i].name,
+                                          value: res[i].id
+                                    }
+                                    selectionList.push(item);
+                              }
+                              inquirer.prompt (
+                                    [{type: 'list', 
+                                          message: `Select the department`, 
+                                          choices: selectionList,
+                                          name: 'id'
+                                    }]
+                              ).then (
+                                    ({id}) => {
+                                          let deptId = id;
+                                          let newRole = new Role (positionName, positionSalary, deptId);
+                                          insertNewRecord(newRole, 'roles');
+                                          console.log(`\n==========================================================\nThe postion of ${name} has been added the company profile\n==========================================================\n`);
+                                    }
+                              )
+                        }
+                  )
             }
       )
 }
@@ -80,8 +104,8 @@ function addDept () {
                   let newDept = new Dept (name);
                   insertNewRecord(newDept, 'dept');
                   console.log(`==========================================================\n
-${name} has been added to the company profile
-==========================================================`);
+${name} has been added to the company profile\n
+==========================================================\n`);
             }
       )
 }
@@ -122,6 +146,9 @@ function displayList (listName, cb) {   //can take an argument specifying which 
                         function(err, res) {
                               if (err) throw err;
                               console.table('\n',res);
+                              console.log(`==========================================================\n
+List of current company positions above.\n
+==========================================================`);               
                               cbOrMainOrExit(cb);    
                         }
                   )
@@ -132,6 +159,9 @@ function displayList (listName, cb) {   //can take an argument specifying which 
                         function(err, res) {
                               if (err) throw err;
                               console.table('\n',res);
+                              console.log(`==========================================================\n
+List of current company departments above.\n
+==========================================================`);                             
                               cbOrMainOrExit(cb);    
                         }
                   )
@@ -149,6 +179,9 @@ function displayList (listName, cb) {   //can take an argument specifying which 
                         function(err, res) {
                               if (err) throw err;
                               console.table('\n',res);
+                              console.log(`==========================================================\n
+List of current employees above.\n
+==========================================================`);               
                               cbOrMainOrExit(cb);    
                         }
                   )
@@ -162,7 +195,6 @@ function displayRoles (){
             function(err, res) {
                   if (err) throw err;
                   console.table('\n',res);
-                  console.log(`==========================================================`);
                   console.log(`==========================================================\n
 Current company postions listed above.\n
 ==========================================================`);
@@ -199,7 +231,9 @@ function displayEmployees (){
                   if (err) throw err;
                   console.table('\n',res);
                   console.log(`==========================================================`);
-                  console.log(`Current company employees listed above.\n`);
+                  console.log(`==========================================================\n
+Current company employees listed above.\n
+==========================================================`);
                   beginPrompts();
             }
       );
@@ -285,6 +319,36 @@ function selectEmployee () {
                               let roleId = id;
                               // console.log('ROLEID ', roleId);
                               assignNewRole (employeeId, roleId);
+                        }
+                  )
+            }
+      )
+ };
+
+ function selectDept () {
+      connection.query(
+            `SELECT * FROM roles`, function(err, res) {
+                  if (err) throw err;
+                  selectionList = [];
+                  for (let i = 0; i < res.length; i++) {
+                        let item = {
+                              name: res[i].name,
+                              value: res[i].id
+                        }
+                        selectionList.push(item);
+                  }
+                  console.log(selectionList);
+                  inquirer.prompt (
+                        [{type: 'list', 
+                              message: `Select the department`, 
+                              choices: selectionList,
+                              name: 'id'
+                        }]
+                  ).then (
+                        ({id}) => {
+                              let deptId = id;
+                              // console.log('ROLEID ', roleId);
+                              assignNewRole (employeeId, deptId);
                         }
                   )
             }
