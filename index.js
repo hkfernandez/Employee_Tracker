@@ -114,7 +114,6 @@ function displayList (listName, cb) {   //can take an argument or select a list 
                               `SELECT * FROM ${tableToReturn}`, 
                               function(err, res) {
                                     if (err) throw err;
-                                    console.log('THIS IS INSIDE THE CREATE LIST INQUIRER');
                                     console.table('\n',res);
                                     beginPrompts();
                               }
@@ -127,21 +126,27 @@ function displayList (listName, cb) {   //can take an argument or select a list 
                   function(err, res) {
                         if (err) throw err;
                         console.table('\n',res);
-                        inquirer.prompt (questions.continueOrMain)
-                        .then (
-                              ({choice})=>{
-                                    if (choice === 'Return to Main Menu') {
-                                          console.log(`\n==========================================\n`);
-                                          beginPrompts();
-                                    } else {
-                                          cb ();
-                                    }
-                              }
-                        )   
+                        contiinueMainCb ();    
                   }
             )
       }    
 }
+
+function contiinueMainCb () { 
+      inquirer.prompt (questions.continueOrMain)
+      .then (
+            ({choice})=>{
+                  if (choice === 'Return to Main Menu') {
+                        console.log(`\n==========================================================\n`);
+                        beginPrompts();
+                  } else if (choice === 'Exit') {
+                        exit();
+                  } else {
+                        cb ();
+                  }
+            }
+      )
+ }
 
 function selectEmployee () {
       connection.query(
