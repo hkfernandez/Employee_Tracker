@@ -163,7 +163,9 @@ function displayRoles (){
                   if (err) throw err;
                   console.table('\n',res);
                   console.log(`==========================================================`);
-                  console.log(`Current company postions listed above.\n`);
+                  console.log(`==========================================================\n
+Current company postions listed above.\n
+==========================================================`);
                   beginPrompts();
             }
       );
