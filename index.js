@@ -104,21 +104,14 @@ function displayList (listName, cb) {   //can take an argument or select a list 
             .then(
                   ({listTypeChoice})=>{
                         if (listTypeChoice === "Departments") {
-                              tableToReturn = 'dept'
+                              displayRoles ();
                         } else if (listTypeChoice === "Roles") {
-                              tableToReturn = 'roles'
+                              displayRoles();
                         } else if (listTypeChoice === "Employees") {
                               tableToReturn = 'employees'
-                        };
-                        connection.query(
-                              `SELECT * FROM ${tableToReturn}`, 
-                              function(err, res) {
-                                    if (err) throw err;
-                                    console.table('\n',res);
-                                    beginPrompts();
-                              }
-                        );
-                  } 
+                        }
+                        
+                  }      
             )
       } else {
             connection.query(
@@ -131,6 +124,34 @@ function displayList (listName, cb) {   //can take an argument or select a list 
             )
       }    
 }
+
+function displayRoles (){
+      connection.query(
+            `SELECT title as POSITION FROM roles`, 
+            function(err, res) {
+                  if (err) throw err;
+                  console.table('\n',res);
+                  console.log(`==========================================================`);
+                  console.log(`Current company postions listed above.\n`);
+                  beginPrompts();
+            }
+      );
+} 
+
+function displayDepts (){
+      connection.query(
+            `SELECT name as DEPARTMENT FROM dept`, 
+            function(err, res) {
+                  if (err) throw err;
+                  console.table('\n',res);
+                  console.log(`==========================================================`);
+                  console.log(`Current company departments listed above.\n`);
+                  beginPrompts();
+            }
+      );
+} 
+
+
 
 function contiinueMainCb () { 
       inquirer.prompt (questions.continueOrMain)
