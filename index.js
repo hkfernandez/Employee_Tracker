@@ -5,14 +5,14 @@
 const inquirer = require ('inquirer');
 const cTable = require('console.table');
 var mysql = require("mysql");
-var connection = mysql.createConnection({
-      host: "localhost",
-      port: 3306,
-      user: "root",
-      password: "rootroot",
-      database: "company_info"
-    });
-
+var connection = mysql.createConnection(
+      {host: "localhost",
+            port: 3306,
+            user: "root",
+            password: "rootroot",
+            database: "company_info"
+      }
+);
 
 // custom 
 const Employee = require ('./lib/Employee.js');
@@ -20,19 +20,7 @@ const Dept = require ('./lib/Dept.js');
 const Role = require ('./lib/Role.js');
 const questions = require ('./lib/Questions.js');
 
-// GLOBAL VARIABLES
-const employeeListQuery = `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
-R.title AS POSITION, 
-D.name AS DEPARTMENT
-FROM employees AS E
-LEFT JOIN roles AS R 
-ON (R.id = E.role_id)
-LEFT JOIN dept AS D
-ON (D.id = R.dept_id)
-ORDER BY LAST ASC;`;
-
-
-//on database connection
+//database connection and begin prompts
 connection.connect(function(err) {
       if (err) throw err;
       console.log("connected as id " + connection.threadId + "\n");
@@ -40,7 +28,6 @@ connection.connect(function(err) {
     });
 
 // FUNCTIONS
-
 function beginPrompts() {
       inquirer.prompt (questions.boilerplate)
             .then 
@@ -67,7 +54,9 @@ function addEmployee () {
             (({firstName, lastName, employeeRole, managerName})=>{
                   let newEmployee = new Employee (firstName, lastName, employeeRole, managerName);
                   insertNewRecord(newEmployee, 'employees');
-                  console.log(`${firstName} ${lastName} has been added as an employee`);
+                  console.log(`==========================================================\n
+${firstName} ${lastName} has been added as an employee\n
+==========================================================`);
             })
 }
 
@@ -77,7 +66,9 @@ function addRole () {
             ({name, salary, dept})=>{
                   let newRole = new Role (name, salary, dept);
                   insertNewRecord(newRole, 'roles');
-                  console.log(`The postion of ${name} has been added the company profile`);
+                  console.log(`==========================================================\n
+The postion of ${name} has been added the company profile\n
+==========================================================`);
             }
       )
 }
@@ -88,7 +79,9 @@ function addDept () {
             ({name})=>{
                   let newDept = new Dept (name);
                   insertNewRecord(newDept, 'dept');
-                  console.log(`${name} has been added to the company profile.`);
+                  console.log(`==========================================================\n
+${name} has been added to the company profile
+==========================================================`);
             }
       )
 }
@@ -104,7 +97,7 @@ function insertNewRecord (newObject, tableName){
       );
 }
 
-function displayList (listName, cb) {   //can take an argument or select a list via prompts - takes callback
+function displayList (listName, cb) {   //can take an argument specifying which table to use to make a list or select a list via prompts - takes callback
       // console.log('LIST NAME ', listName);
       let tableToReturn = listName
       if (listName === undefined) {
@@ -121,14 +114,45 @@ function displayList (listName, cb) {   //can take an argument or select a list 
                   }      
             )
       } else {
-            connection.query(
-                  `SELECT * FROM ${tableToReturn}`, 
-                  function(err, res) {
-                        if (err) throw err;
-                        console.table('\n',res);
-                        cbOrMainOrExit(cb);    
-                  }
-            )
+            if (listName === 'roles') {
+                  connection.query(
+                        `SELECT title as POSITION, salary as SALARY 
+                        FROM roles 
+                        ORDER BY POSITION`, 
+                        function(err, res) {
+                              if (err) throw err;
+                              console.table('\n',res);
+                              cbOrMainOrExit(cb);    
+                        }
+                  )
+            } else if (listName === 'dept') {
+                  connection.query(
+                        `SELECT name as DEPARTMENT 
+                        FROM dept;`, 
+                        function(err, res) {
+                              if (err) throw err;
+                              console.table('\n',res);
+                              cbOrMainOrExit(cb);    
+                        }
+                  )
+            } else {
+                  connection.query(
+                        `SELECT E.first_name AS FIRST, E.last_name AS LAST, 
+                        R.title AS POSITION, 
+                        D.name AS DEPARTMENT
+                        FROM employees AS E
+                        LEFT JOIN roles AS R 
+                        ON (R.id = E.role_id)
+                        LEFT JOIN dept AS D
+                        ON (D.id = R.dept_id)
+                        ORDER BY LAST ASC;`, 
+                        function(err, res) {
+                              if (err) throw err;
+                              console.table('\n',res);
+                              cbOrMainOrExit(cb);    
+                        }
+                  )
+            }
       }    
 }
 
@@ -151,8 +175,9 @@ function displayDepts (){
             function(err, res) {
                   if (err) throw err;
                   console.table('\n',res);
-                  console.log(`==========================================================`);
-                  console.log(`Current company departments listed above.\n`);
+                  console.log(`==========================================================\n
+Current company departments listed above.\n
+==========================================================`);
                   beginPrompts();
             }
       );
@@ -178,9 +203,7 @@ function displayEmployees (){
       );
 } 
 
-
-
-function cbOrMainOrExit () { 
+function cbOrMainOrExit (cb) { 
       inquirer.prompt (questions.continueOrMain)
       .then (
             ({choice})=>{
@@ -296,113 +319,3 @@ Enter 'npm start' on the command line start a new session\n
       );
        return process.exit (0)
  }
-// function buildTableList (tableName) {
-//       connection.query(
-//             `SELECT * FROM ${tableName}`, function(err, res) {
-//                   if (err) throw err;
-//                   gSelectionList = []
-//                   if (tableName ==='employees'){
-//                         for (let i = 0; i < res.length; i++) {
-//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
-//                               let item = {
-//                                     display : `${res[i].first_name} ${res[i].last_name}`,
-//                                     value: { id: res[i].id }
-//                               }
-//                               gSelectionList.push(item);
-//                         }
-//                   } else if (tableName ==='roles') {
-//                         for (let i = 0; i < res.length; i++) {
-//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
-//                               let item = {
-//                                     display : res[i].title,
-//                                     value: { id: res[i].id }
-//                               }
-//                               gSelectionList.push(item);
-//                         }
-
-//                   } else {
-//                         for (let i = 0; i < res.length; i++) {
-//                               //create a new object whose name is the items's name and value is an object containing the highest bid and id of the items
-//                               let item = {
-//                                     display : res[i].name,
-//                                     value: { id: res[i].id }
-//                               }
-//                               gSelectionList.push(item);
-//                         }
-
-//                   }
-//                   console.log('GSELCTIONLIST ', gSelectionList);
-//             }
-//       )
-//  }
-
-//  const buildTableListPromise = new Promise (
-//        (resolve, reject) => {
-//             resolve (buildTableList('employees'));
-//        }
-//  )
-// function changeManager () {
-//       inquirer.prompt (questions.changeManager)
-//             .then 
-//             (({employee, manager})=>{
-
-//             })
-// }
-
-
-
-// function init () {
-//       beginPrompts()
-// }
-
-//  init ();
-
-//=======================CRUD FUNCTIONS=========================================
-    
-//     function updateEmployee() {
-//       console.log("Updating all Rocky Road quantities...\n");
-//       var query = connection.query(
-//         "UPDATE products SET ? WHERE ?",
-//         [
-//           {
-//             quantity: 100
-//           },
-//           {
-//             flavor: "Rocky Road"
-//           }
-//         ],
-//         function(err, res) {
-//           if (err) throw err;
-//           console.log(res.affectedRows + " products updated!\n");
-//           // Call deleteProduct AFTER the UPDATE completes
-//           deleteProduct();
-//         }
-//       );
-    
-//       // logs the actual query being run
-//       console.log(query.sql);
-//     }
-    
-//     function deleteemployee() {
-//       console.log("Deleting all strawberry icecream...\n");
-//       connection.query(
-//         "DELETE FROM products WHERE ?",
-//         {
-//           flavor: "strawberry"
-//         },
-//         function(err, res) {
-//           if (err) throw err;
-//           console.log(res.affectedRows + " products deleted!\n");
-//           // Call readProducts AFTER the DELETE completes
-//           readProducts();
-//         }
-//       );
-//     }
-    
-// const changeRoleSelectEmployee =[
-//       {type: 'list', message: `Select the employee`, name: 'employee', choices: gSelectionList},//address
-// ]
-
-// const changeRoleSelectManager =[
-//       {type: 'list', message: `Select the manager`, name: 'role', choices: gSelectionList}//address
-// ]
