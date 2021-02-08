@@ -52,7 +52,7 @@ function addEmployee () {
       inquirer.prompt (questions.addEmployee)
             .then 
             (({firstName, lastName, employeeRole, managerName})=>{
-                  let newEmployee = new Employee (firstName, lastName, employeeRole, managerName);
+                  let newEmployee = new Employee (firstName, lastName);
                   insertNewRecord(newEmployee, 'employees');
                   console.log(`==========================================================\n
 ${firstName} ${lastName} has been added as an employee\n
@@ -103,9 +103,7 @@ function addDept () {
             ({name})=>{
                   let newDept = new Dept (name);
                   insertNewRecord(newDept, 'dept');
-                  console.log(`==========================================================\n
-${name} has been added to the company profile\n
-==========================================================\n`);
+                  console.log(`==========================================================\n${name} has been added to the company profile\n==========================================================\n`);
             }
       )
 }
@@ -146,9 +144,7 @@ function displayList (listName, cb) {   //can take an argument specifying which 
                         function(err, res) {
                               if (err) throw err;
                               console.table('\n',res);
-                              console.log(`==========================================================\n
-List of current company positions above.\n
-==========================================================`);               
+                              console.log(`==========================================================\nList of current company positions above.\n==========================================================`);               
                               cbOrMainOrExit(cb);    
                         }
                   )
@@ -195,9 +191,7 @@ function displayRoles (){
             function(err, res) {
                   if (err) throw err;
                   console.table('\n',res);
-                  console.log(`==========================================================\n
-Current company postions listed above.\n
-==========================================================`);
+                  console.log(`==========================================================\nCurrent company postions listed above.\n==========================================================`);
                   beginPrompts();
             }
       );
@@ -209,9 +203,7 @@ function displayDepts (){
             function(err, res) {
                   if (err) throw err;
                   console.table('\n',res);
-                  console.log(`==========================================================\n
-Current company departments listed above.\n
-==========================================================`);
+                  console.log(`==========================================================\nCurrent company departments listed above.\n==========================================================`);
                   beginPrompts();
             }
       );
@@ -231,9 +223,7 @@ function displayEmployees (){
                   if (err) throw err;
                   console.table('\n',res);
                   console.log(`==========================================================`);
-                  console.log(`==========================================================\n
-Current company employees listed above.\n
-==========================================================`);
+                  console.log(`==========================================================\nCurrent company employees listed above.\n==========================================================`);
                   beginPrompts();
             }
       );
@@ -369,19 +359,14 @@ function selectEmployee () {
       WHERE E.id = ${employeeId};
             `,
              function(err, res) {
-                  console.log(`==========================================================\n
-${res[0].FIRST} ${res[0].LAST} has been assigned the postion of ${res[0].POSITION}\n
-==========================================================`);
+                  console.log(`==========================================================\n${res[0].FIRST} ${res[0].LAST} has been assigned the postion of ${res[0].POSITION}\n==========================================================`);
                   beginPrompts();
             }
       )
  }
 
  function exit () {
-       console.log(`==========================================================\n
-You have ended your session\n
-Enter 'npm start' on the command line start a new session\n
-==========================================================\n`
+       console.log(`==========================================================\nYou have ended your session\nEnter 'npm start' on the command line start a new session\n==========================================================\n`
       );
        return process.exit (0)
  }
