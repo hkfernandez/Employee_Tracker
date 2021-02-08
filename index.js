@@ -45,6 +45,8 @@ function beginPrompts() {
                   }else if (boilerplateChoice === 'Exit the program'){
                         exit();
                   }
+                  console.log(`==========================================================\n`)
+
             })
 }     
 
@@ -54,9 +56,7 @@ function addEmployee () {
             (({firstName, lastName, employeeRole, managerName})=>{
                   let newEmployee = new Employee (firstName, lastName);
                   insertNewRecord(newEmployee, 'employees');
-                  console.log(`==========================================================\n
-${firstName} ${lastName} has been added as an employee\n
-==========================================================\n`);
+                  console.log(`==========================================================\n${firstName} ${lastName} has been added as an employee\n==========================================================\n`);
             })
 }
 
